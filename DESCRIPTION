@@ -1,0 +1,21 @@
+Package: gRowthAnalysis
+Title: What the Package Does (one line, title case)
+Version: 0.0.1
+Maintainer: pieter coussement <coussementpieter@gmail.com>
+Description: What the package does (one paragraph).
+Author: pieter coussement
+Depends: R (>= 3.3.1)
+Imports:
+Suggests:
+    testthat,
+    knitr,
+    rmarkdown,
+    dplyr,
+    readr
+VignetteBuilder: knitr
+License: MIT
+Encoding: UTF-8
+LazyData: true
+URL: https://github.com/picousse/gRowthAnalysis
+BugRepots: https://github.com/picousse/gRowthAnalysis/issues
+RoxygenNote: 6.1.1

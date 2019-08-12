@@ -1,0 +1,12 @@
+---
+title: "What the Package Does (one line, title case)"
+author: "pieter coussement"
+date: \today
+output: pdf_document
+bibliography: references.bib
+vignette: >
+  %\VignetteIndexEntry{ What the Package Does (one line, title case) }
+  %\VignetteEngine{knitr::rmarkdown}
+  %\usepackage[utf8]{inputenc} 
+---
+
