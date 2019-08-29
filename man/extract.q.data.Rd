@@ -4,7 +4,7 @@
 \alias{extract.q.data}
 \title{Extract calculated growth parameters into a dataframe}
 \usage{
-extract.q.data(df, col)
+\method{extract}{q.data}(df, col)
 }
 \arguments{
 \item{df}{}
