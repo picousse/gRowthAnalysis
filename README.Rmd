@@ -4,3 +4,53 @@
 [![codecov.io](https://codecov.io/github/picousse/gRowthAnalysis/coverage.svg?branch=master)](https://codecov.io/github/picousse/gRowthAnalysis?branch=master)
 
 pkgdown::build_site()
+
+
+
+
+library(tidyverse)
+library(devtools)
+load_all()
+
+
+file_name = "data/20190618_bidir_GFPmorange_GFPgain95/2019-06-07 15-56-57_plate_1_0.csv"
+
+data <- read.data.csv(file_name)
+
+data <- time.to.hour(data, "time")
+
+
+corr_file = "data/YeastProject_SR_20150228_GrowthExperiment/FitLang.csv"
+
+data <- correlation.recalculation(data, "ABS_600_600_NA", corr_file)
+
+
+# temperature
+df_temp = data %>%
+  filter(signal == "TEMP")
+
+
+
+# all other data
+df = data %>%
+  filter(signal != "TEMP") %>%
+  nest(-well, -row, -col, -strain, -medium)
+
+# calculate growth speeds 
+df <- df %>%
+  mutate(exp.time = map_dbl(data, ~calc.exp.time(., signal = "ABS_600_600_NA"))) %>%
+  mutate(data.exp = map2(data, exp.time, ~.x %>% filter(time_hour < .y)))
+  
+tmp <- df %>% 
+  mutate(growth.parameters = map(data.exp, ~calc.q(df = .,calc.signal = "ABS_600_600_NA" ))) 
+
+# mu extraction/Estimate does not seem to work properly
+extract.q.data(tmp, growth.parameters)
+
+
+
+# tmp2 <- df %>% mutate(ratio = map(data.exp, ~ tidy(calc.ratio(., x.signal= "ABS_600_600_NA", y.signal = "FLUO_548_581_140"))))
+tmp2 <- df %>% mutate(ratio = map(data.exp, ~ calc.ratio(., x.signal= "ABS_600_600_NA", y.signal = "FLUO_548_581_140")))
+
+extract.ratio.data(tmp2, ratio)
+

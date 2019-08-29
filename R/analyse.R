@@ -43,6 +43,16 @@ calc.exp.time <- function(df = NULL, signal = NULL, input_time = "time_hour", tr
   return(final_time)
 }
 
+#' Calculate mu, based on a certain model
+#'
+#' @param df 
+#' @param calc.signal 
+#' @param model 
+#'
+#' @return
+#' @export
+#'
+#' @examples
 calc.q <- function(df = NULL, calc.signal = NULL, model = "gompertz"){
   if (is.null(df)){stop("There is no dataframe given.")}
   if (is.null(signal)){stop("There is no signal given.")}
@@ -79,13 +89,41 @@ calc.q <- function(df = NULL, calc.signal = NULL, model = "gompertz"){
   # out <- data_fit[c("name", "mu", "A", "max", "integral", "lambda")] 
   
   
-  
-  
-  
   return(fit)
 }
 
+#' Extract calculated growth parameters into a dataframe
+#'
+#' @param df 
+#' @param col 
+#'
+#' @return
+#' @export
+#'
+#' @examples
+extract.q.data <- function(df, col){
+  col_var = enquo(col)
 
+  df_out <- df %>%
+    mutate(fit.flag = map_lgl(!!col_var, ~.$fitFlag)) %>%
+    mutate(mu = map_dbl(!!col_var, ~ifelse(class(.$parameters$mu) == "logical", NA, .$parameters$mu[['Estimate']] ))) %>%
+    mutate(A = map_dbl(!!col_var, ~ifelse(class(.$parameters$A) == "logical", NA, .$parameters$A[['Estimate']] ))) %>%
+    mutate(lambda = map_dbl(!!col_var, ~ifelse(class(.$parameters$lambda) == "logical", NA, .$parameters$lambda[['Estimate']] ))) %>%
+    mutate(integral = map_dbl(!!col_var, ~ifelse(class(.$parameters$integral) == "logical", NA, .$parameters$integral ))) %>%
+    select(well, fit.flag, mu, A, lambda, integral)
+  return(df_out)
+}
+
+#' calcuate ratio q
+#'
+#' @param df 
+#' @param x.signal 
+#' @param y.signal 
+#'
+#' @return
+#' @export
+#'
+#' @examples
 calc.ratio <- function(df = NULL, x.signal = NULL, y.signal = NULL){
   
   df.tmp <- df %>%
@@ -140,3 +178,27 @@ calc.ratio <- function(df = NULL, x.signal = NULL, y.signal = NULL){
     # #adding the data
     # out = rbind( dataOutput, out)
 }
+
+
+#' extract ratio data
+#'
+#' @param df 
+#' @param col 
+#'
+#' @return
+#' @export
+#'
+#' @examples
+extract.ratio.data <- function(df, col){
+  col_var = enquo(col)
+  
+  df_out <- df %>%
+    mutate(ratio.B = map_dbl(!!col_var, ~.$coefficients[[1]])) %>%
+    mutate(ratio.A = map_dbl(!!col_var, ~.$coefficients[[2]])) 
+  
+  return(df_out)
+}
+
+
+
+
