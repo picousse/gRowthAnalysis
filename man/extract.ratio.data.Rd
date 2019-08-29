@@ -4,7 +4,7 @@
 \alias{extract.ratio.data}
 \title{extract ratio data}
 \usage{
-\method{extract}{ratio.data}(df, col)
+extract.ratio.data(df, col)
 }
 \arguments{
 \item{df}{}
