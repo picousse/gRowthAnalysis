@@ -1,3 +1,6 @@
+
+# data clean up -----------------------------------------------------------
+
 #' Title
 #'
 #' @param df 
@@ -43,6 +46,9 @@ calc.exp.time <- function(df = NULL, signal = NULL, input_time = "time_hour", tr
   return(final_time)
 }
 
+
+# q calc ------------------------------------------------------------------
+
 #' Calculate mu, based on a certain model
 #'
 #' @param df 
@@ -53,9 +59,9 @@ calc.exp.time <- function(df = NULL, signal = NULL, input_time = "time_hour", tr
 #' @export
 #'
 #' @examples
-calc.q <- function(df = NULL, calc.signal = NULL, model = "gompertz"){
+q.calc.individual <- function(df = NULL, calc.signal = NULL, model = "gompertz"){
   if (is.null(df)){stop("There is no dataframe given.")}
-  if (is.null(signal)){stop("There is no signal given.")}
+  if (is.null(calc.signal)){stop("There is no signal given.")}
   # print(calc.signal)
   data <- df %>%
     dplyr::filter(signal == calc.signal )
@@ -64,13 +70,26 @@ calc.q <- function(df = NULL, calc.signal = NULL, model = "gompertz"){
   
   data = data%>%
     dplyr::mutate(value.log = furrr::future_map_dbl(value, ~log(. / min(value[1:20]))))
-    
+  
   fit = grofit::gcFitModel(data$time_hour, 
-                       data$value.log, 
-                       gcID="undefinded", 
-                       control=grofit::grofit.control(suppress.messages=TRUE,model.type = c(model)))
+                           data$value.log, 
+                           gcID="undefinded", 
+                           control=grofit::grofit.control(suppress.messages=TRUE,model.type = c(model)))
+  
+  if (fit$fitFlag){
+    plot <- ggplot2::ggplot() +
+      ggplot2::geom_point(aes (x = fit$raw.time, y = fit$raw.data)) +
+      ggplot2::geom_point(aes (x = data$time_hour, y=data$value), color = "blue", size = "1") +
+      ggplot2::geom_line(aes (x = fit$fit.time , y = fit$fit.data), color = "red") +
+      ggplot2::geom_abline(intercept = -fit$parameters$mu * fit$parameters$lambda, slope = fit$parameters$mu ) +
+      ggplot2::scale_x_continuous(minor_breaks = waiver()) +
+      ggplot2::scale_y_continuous(minor_breaks = waiver()) +
+      ggplot2::ggtitle(paste(name, "Fitted data ", calc.signal)) +
+      ggplot2::theme(panel.grid.major = element_line(colour = "gray80"))
+  }else{
     
-
+  }
+  
   #   dplyr::mutate(raw_plot = furrr::future_map(.x = data,  #single plot? (why 2?)
   #                                              ~ggplot2::ggplot(.x, aes(x = delta_time, y = variable)) +
   #                                                ggplot2::geom_point() +
@@ -87,9 +106,37 @@ calc.q <- function(df = NULL, calc.signal = NULL, model = "gompertz"){
   #                                                ggplot2::theme(panel.grid.major = element_line(colour = "gray80"))))
   # 
   # out <- data_fit[c("name", "mu", "A", "max", "integral", "lambda")] 
+  return(list(fit, fit))
+}
+
+#' plot the q fit
+#'
+#' @param fit 
+#' @param calc.signal 
+#' @param name 
+#'
+#' @return
+#' @export
+#'
+#' @examples
+q.plot.individual <- function(fit = NULL, calc.signal = NULL , name = NULL){
+  if (is.null(df)){stop("There is no dataframe given.")}
+  if (is.null(calc.signal)){stop("There is no signal given.")}
+  if (is.null(name)){stop("There is no name given.")}
   
+  calc.signal = enquo(calc.signal)
   
-  return(fit)
+  p <- ggplot2::ggplot() +
+    ggplot2::geom_point(aes (x = fit$raw.time, y = fit$raw.data)) +
+    ggplot2::geom_line(aes (x = fit$fit.time , y = fit$fit.data), color = "red") +
+    ggplot2::geom_abline(intercept = -fit$parameters$mu * fit$parameters$lambda, slope = fit$parameters$mu ) +
+    ggplot2::scale_x_continuous(minor_breaks = waiver()) +
+    ggplot2::scale_y_continuous(minor_breaks = waiver()) +
+    ggplot2::ggtitle(paste(name, "Fitted data ", calc.signal)) +
+    ggplot2::theme(panel.grid.major = element_line(colour = "gray80"))
+  
+  return(p)
+  
 }
 
 #' Extract calculated growth parameters into a dataframe
@@ -101,9 +148,9 @@ calc.q <- function(df = NULL, calc.signal = NULL, model = "gompertz"){
 #' @export
 #'
 #' @examples
-extract.q.data <- function(df, col){
+q.extract.data <- function(df, col){
   col_var = enquo(col)
-
+  
   df_out <- df %>%
     mutate(fit.flag = map_lgl(!!col_var, ~.$fitFlag)) %>%
     mutate(mu = map_dbl(!!col_var, ~ifelse(class(.$parameters$mu) == "logical", NA, .$parameters$mu[['Estimate']] ))) %>%
@@ -113,6 +160,31 @@ extract.q.data <- function(df, col){
     select(well, fit.flag, mu, A, lambda, integral)
   return(df_out)
 }
+
+q.calc.df <-function(df = NULL, calc.signal = NULL, data.col = NULL, model = "gompertz"){
+  if (is.null(df)){stop("There is no dataframe given.")}
+  if (is.null(calc.signal)){stop("There is no signal given.")}
+  if (is.null(data.col)){stop("There data col given.")}
+  
+  # create dataframe with fit model, extract data and plots
+  
+  tmp <- df %>% 
+    mutate(growth.parameters = map(data.col, ~calc.q(df = .,calc.signal = calc.signal ))) %>%
+    mutate(raw_data = map)
+  
+  
+  # use calc.q.individual
+  # plot q
+}
+
+
+
+
+
+# calc ratio --------------------------------------------------------------
+
+
+
 
 #' calcuate ratio q
 #'
@@ -194,7 +266,8 @@ extract.ratio.data <- function(df, col){
   
   df_out <- df %>%
     mutate(ratio.B = map_dbl(!!col_var, ~.$coefficients[[1]])) %>%
-    mutate(ratio.A = map_dbl(!!col_var, ~.$coefficients[[2]])) 
+    mutate(ratio.A = map_dbl(!!col_var, ~.$coefficients[[2]])) %>%
+    select(well, ratio.A, ratio.B)
   
   return(df_out)
 }
