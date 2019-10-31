@@ -12,39 +12,50 @@
 #' @export
 #'
 #' @examples
-calc.exp.time <- function(df = NULL, signal = NULL, input_time = "time_hour", treshold = 0.3){
+calc.exp.time <- function(df = NULL, input_time = "time", input_value = "value",  treshold = 0.3, lambda = 1e-5){
   if (is.null(df)){stop("There is no dataframe given.")}
   if (is.null(signal)){stop("There is no signal given.")}
   
-  df_tmp <- df %>% 
-    filter(signal == !!(signal)) %>%
-    filter(value > !!(treshold))
+  fit = smooth.spline(df[[input_time]], df[[input_value]], cv=TRUE, lambda = lambda)
+
+  fit.pred.deriv1 = predict(fit, deriv = 1)
   
-  #calculation of the diff time, needed for plotting
-  diff_time = c()
-  for (t in 1:length(df_tmp[[input_time]])-1){
-    diff_time[t]=mean(c(df_tmp[[input_time]][t+1], df_tmp[[input_time]][t]))
-  }
+  # plot(fit.pred.deriv1$x, fit.pred.deriv1$y, col="blue", lwd = 2)
+  # abline(h=0)
   
-  #calculation of the first prime
-  value.prime <- diff(df_tmp$value)/diff(df_tmp[[input_time]])
+  # calculate running average.
+  time.average = moving.average(fit.pred.deriv1$x, n= 5 )
+  value.average = moving.average(fit.pred.deriv1$y, n= 5 )
+  # plot(t,v)
+  # abline(h=0)
   
-  #Different approach. Apply a smoothing line through the differential. When this lines crosses the X-axis at y= 0, that is where the exp stops.
-  spl2 <- smooth.spline(x=diff_time, y=value.prime)
-  pred.prime <- predict(spl2)
+  # calculate absolute values
+  value.average.abs = abs(value.average)
+  index = which.min(value.average.abs)
   
-  #look for the maximum first. In other words look where the curve is no longer increasing for 3 data points. From that point on, check when the curve crosses at y=0
-  for (t in 1:(length(pred.prime$x)-1)){
-    if (pred.prime$y[t]>0 && pred.prime$y[t+1]<=0 && df_tmp$value[t]>treshold){
-      final_time=pred.prime$x[t]
-      break
-    }else{
-      final_time = tail(df_tmp$time_hour, n=1)
-    }
-  }
+  exp.time = time.average[index]
   
-  return(final_time)
+  return(exp.time)
 }
+
+
+#' Title
+#'
+#' @param x 
+#' @param n 
+#'
+#' @return
+#' @export
+#'
+#' @examples
+moving.average <- function(x, n = 5){
+  tmp = stats::filter(x, rep(1 / n, n), sides = 2)
+  tmp = as.vector(tmp)
+  tmp = na.omit(tmp)
+  tmp = as.vector(tmp)
+  return(tmp)
+}
+
 
 
 # q calc ------------------------------------------------------------------
@@ -59,36 +70,29 @@ calc.exp.time <- function(df = NULL, signal = NULL, input_time = "time_hour", tr
 #' @export
 #'
 #' @examples
-q.calc.individual <- function(df = NULL, calc.signal = NULL, model = "gompertz"){
-  if (is.null(df)){stop("There is no dataframe given.")}
-  if (is.null(calc.signal)){stop("There is no signal given.")}
-  # print(calc.signal)
-  data <- df %>%
-    dplyr::filter(signal == calc.signal )
+q.calc.individual <- function(data, model = "gompertz"){
+
+  data <- data %>%
+    dplyr::mutate(value.log = purrr::map_dbl(value, ~log(. / min(value[1:20]))))
   
-  # print(data)
-  
-  data = data%>%
-    dplyr::mutate(value.log = furrr::future_map_dbl(value, ~log(. / min(value[1:20]))))
-  
-  fit = grofit::gcFitModel(data$time_hour, 
+  fit <- grofit::gcFitModel(data$time, 
                            data$value.log, 
-                           gcID="undefinded", 
+                           gcID="undefined", 
                            control=grofit::grofit.control(suppress.messages=TRUE,model.type = c(model)))
   
-  if (fit$fitFlag){
-    plot <- ggplot2::ggplot() +
-      ggplot2::geom_point(aes (x = fit$raw.time, y = fit$raw.data)) +
-      ggplot2::geom_point(aes (x = data$time_hour, y=data$value), color = "blue", size = "1") +
-      ggplot2::geom_line(aes (x = fit$fit.time , y = fit$fit.data), color = "red") +
-      ggplot2::geom_abline(intercept = -fit$parameters$mu * fit$parameters$lambda, slope = fit$parameters$mu ) +
-      ggplot2::scale_x_continuous(minor_breaks = waiver()) +
-      ggplot2::scale_y_continuous(minor_breaks = waiver()) +
-      ggplot2::ggtitle(paste(name, "Fitted data ", calc.signal)) +
-      ggplot2::theme(panel.grid.major = element_line(colour = "gray80"))
-  }else{
-    
-  }
+  # if (fit$fitFlag){
+  #   plot <- ggplot2::ggplot() +
+  #     ggplot2::geom_point(aes (x = fit$raw.time, y = fit$raw.data)) +
+  #     ggplot2::geom_point(aes (x = data$time_hour, y=data$value), color = "blue", size = "1") +
+  #     ggplot2::geom_line(aes (x = fit$fit.time , y = fit$fit.data), color = "red") +
+  #     ggplot2::geom_abline(intercept = -fit$parameters$mu * fit$parameters$lambda, slope = fit$parameters$mu ) +
+  #     ggplot2::scale_x_continuous(minor_breaks = waiver()) +
+  #     ggplot2::scale_y_continuous(minor_breaks = waiver()) +
+  #     ggplot2::ggtitle(paste(name, "Fitted data ", calc.signal)) +
+  #     ggplot2::theme(panel.grid.major = element_line(colour = "gray80"))
+  # }else{
+  #   
+  # }
   
   #   dplyr::mutate(raw_plot = furrr::future_map(.x = data,  #single plot? (why 2?)
   #                                              ~ggplot2::ggplot(.x, aes(x = delta_time, y = variable)) +
@@ -106,7 +110,7 @@ q.calc.individual <- function(df = NULL, calc.signal = NULL, model = "gompertz")
   #                                                ggplot2::theme(panel.grid.major = element_line(colour = "gray80"))))
   # 
   # out <- data_fit[c("name", "mu", "A", "max", "integral", "lambda")] 
-  return(list(fit, fit))
+  return(fit)
 }
 
 #' plot the q fit
@@ -136,6 +140,23 @@ q.plot.individual <- function(fit = NULL, calc.signal = NULL , name = NULL){
     ggplot2::theme(panel.grid.major = element_line(colour = "gray80"))
   
   return(p)
+  
+}
+
+#' Title
+#'
+#' @param df 
+#' @param time 
+#' @param value 
+#'
+#' @return
+#' @export
+#'
+#' @examples
+q.plot.raw <- function(df, time = "time", value = "value"){
+  
+  p <- ggplot2::ggplot(df, aes(x = time , y = value)) + 
+    ggplot2::geom_point()
   
 }
 

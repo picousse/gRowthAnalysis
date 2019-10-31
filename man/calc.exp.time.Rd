@@ -4,17 +4,17 @@
 \alias{calc.exp.time}
 \title{Title}
 \usage{
-calc.exp.time(df = NULL, signal = NULL, input_time = "time_hour",
-  treshold = 0.3)
+calc.exp.time(df = NULL, input_time = "time", input_value = "value",
+  treshold = 0.3, lambda = 1e-05)
 }
 \arguments{
 \item{df}{}
 
-\item{signal}{}
-
 \item{input_time}{}
 
 \item{treshold}{}
+
+\item{signal}{}
 }
 \description{
 Title

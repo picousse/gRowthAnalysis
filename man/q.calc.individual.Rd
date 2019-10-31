@@ -4,14 +4,14 @@
 \alias{q.calc.individual}
 \title{Calculate mu, based on a certain model}
 \usage{
-q.calc.individual(df = NULL, calc.signal = NULL, model = "gompertz")
+q.calc.individual(data, model = "gompertz")
 }
 \arguments{
+\item{model}{}
+
 \item{df}{}
 
 \item{calc.signal}{}
-
-\item{model}{}
 }
 \description{
 Calculate mu, based on a certain model

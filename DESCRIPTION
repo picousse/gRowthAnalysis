@@ -11,7 +11,8 @@ Suggests:
     knitr,
     rmarkdown,
     dplyr,
-    readr
+    readr,
+    xml2
 VignetteBuilder: knitr
 License: MIT
 Encoding: UTF-8

@@ -10,3 +10,28 @@ vignette: >
   %\usepackage[utf8]{inputenc} 
 ---
 
+How to use:
+```{r}
+library(devtools)
+load_all()
+
+library(furrr)
+plan(multisession, workers = availableCores()-1)
+
+```
+
+
+
+# data input.
+
+## XML file
+
+```{r}
+file = "data/20190618_bidir_GFPmorange_GFPgain95/2019-06-07 15-56-57_plate_1.xml"
+xml.in = read.tecan.xml(file)
+
+write.csv(xml.in, "xml.parsed.csv", row.names = FALSE)
+
+readr::read_csv("xml.parsed.csv")
+```
+
