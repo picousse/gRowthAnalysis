@@ -2,15 +2,21 @@
 % Please edit documentation in R/analyse.R
 \name{moving.average}
 \alias{moving.average}
-\title{Title}
+\title{calculate the moving average of a dataseries}
 \usage{
 moving.average(x, n = 5)
 }
 \arguments{
-\item{x}{}
+\item{x}{(vector). Vector containing the data that for which the average needs to be calculated.}
 
-\item{n}{}
+\item{n}{(integer). Number of values for which the average needs to be calculated.}
+}
+\value{
+vector. Data vector containing the averages. This vector is as long as the input (and thus contains NA's)
 }
 \description{
-Title
+calculate the moving average of a dataseries
+}
+\author{
+Pieter Coussement, \email{coussementpieter@gmail.com}
 }

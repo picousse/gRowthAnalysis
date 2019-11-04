@@ -4,15 +4,19 @@
 \alias{q.calc.individual}
 \title{Calculate mu, based on a certain model}
 \usage{
-q.calc.individual(data, model = "gompertz")
+q.calc.individual(df, model = "gompertz")
 }
 \arguments{
-\item{model}{}
+\item{df}{(dataframe). dataframe containing all necessary data for the calculation}
 
-\item{df}{}
-
-\item{calc.signal}{}
+\item{model}{(string). model to is used to fit. (default: "gompertz")}
+}
+\value{
+grofit object
 }
 \description{
 Calculate mu, based on a certain model
+}
+\author{
+Pieter Coussement, \email{coussementpieter@gmail.com}
 }

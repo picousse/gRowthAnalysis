@@ -3,7 +3,7 @@
 S3method(extract,ratio.data)
 export("%>%")
 export(calc.exp.time)
-export(calc.ratio)
+export(calc.ratio.individual)
 export(convert.parameter.df.to.name)
 export(convert.time)
 export(correlation.recalculation)

@@ -1,32 +1,33 @@
 
 # data clean up -----------------------------------------------------------
 
-#' Title
+
+#' calculate the exponential time of the curve. This is done by fitting a spline, and calculating when the first derivative goes below 0.
 #'
-#' @param df 
-#' @param signal 
-#' @param input_time 
-#' @param treshold 
+#' @param df (dataframe). Dataframe containing the data
+#' @param input_time (string). Column name that contains the time value (in hours!). (Default = "time")
+#' @param input_value (string). Column name that contains the measured value. (Default = "value")
+#' @param treshold (double). End of exponential time is only calculated if this treshold has been surpassed. This mainly filters out the noise often seen in the beginnen of the curce.
+#' @param lamda (double), Smoothing paraneter. this needed to filter out outliers.
 #'
-#' @return
+#' @return double. End of the exponential phase
 #' @export
-#'
-#' @examples
+#' 
+#' @author Pieter Coussement, \email{coussementpieter@@gmail.com}
+#' 
 calc.exp.time <- function(df = NULL, input_time = "time", input_value = "value",  treshold = 0.3, lambda = 1e-5){
   if (is.null(df)){stop("There is no dataframe given.")}
-  if (is.null(signal)){stop("There is no signal given.")}
+
+  df <- df %>% filter( !!(sym(input_value)) > !!treshold)
   
   fit = smooth.spline(df[[input_time]], df[[input_value]], cv=TRUE, lambda = lambda)
 
   fit.pred.deriv1 = predict(fit, deriv = 1)
   
-  # plot(fit.pred.deriv1$x, fit.pred.deriv1$y, col="blue", lwd = 2)
-  # abline(h=0)
-  
   # calculate running average.
   time.average = moving.average(fit.pred.deriv1$x, n= 5 )
   value.average = moving.average(fit.pred.deriv1$y, n= 5 )
-  # plot(t,v)
+  plot(time.average,value.average)
   # abline(h=0)
   
   # calculate absolute values
@@ -39,15 +40,15 @@ calc.exp.time <- function(df = NULL, input_time = "time", input_value = "value",
 }
 
 
-#' Title
+#' calculate the moving average of a dataseries
 #'
-#' @param x 
-#' @param n 
+#' @param x (vector). Vector containing the data that for which the average needs to be calculated.
+#' @param n (integer). Number of values for which the average needs to be calculated.
 #'
-#' @return
+#' @return vector. Data vector containing the averages. This vector is as long as the input (and thus contains NA's)
 #' @export
-#'
-#' @examples
+#' 
+#' @author Pieter Coussement, \email{coussementpieter@@gmail.com}
 moving.average <- function(x, n = 5){
   tmp = stats::filter(x, rep(1 / n, n), sides = 2)
   tmp = as.vector(tmp)
@@ -62,23 +63,42 @@ moving.average <- function(x, n = 5){
 
 #' Calculate mu, based on a certain model
 #'
-#' @param df 
-#' @param calc.signal 
-#' @param model 
+#' @param df (dataframe). dataframe containing all necessary data for the calculation
+#' @param model (string). model to is used to fit. (default: "gompertz")
 #'
-#' @return
+#' @return grofit object
 #' @export
 #'
-#' @examples
-q.calc.individual <- function(data, model = "gompertz"){
+#' @author Pieter Coussement, \email{coussementpieter@@gmail.com}
+q.calc.individual <- function(df, model = "gompertz"){
 
-  data <- data %>%
+  data <- df %>%
     dplyr::mutate(value.log = purrr::map_dbl(value, ~log(. / min(value[1:20]))))
   
-  fit <- grofit::gcFitModel(data$time, 
-                           data$value.log, 
-                           gcID="undefined", 
-                           control=grofit::grofit.control(suppress.messages=TRUE,model.type = c(model)))
+  fit = tryCatch({
+    grofit::gcFitModel(data$time, 
+                      data$value.log, 
+                      gcID="undefined", 
+                      control=grofit::grofit.control(suppress.messages=TRUE,model.type = c(model)))
+  }, warning = function(w) {
+    return(NA)
+  }, error = function(e) {
+    return(NA)
+  }, finally = {
+  })
+  
+  
+  
+  
+  
+  
+  
+  
+  # 
+  # fit <- grofit::gcFitModel(data$time, 
+  #                          data$value.log, 
+  #                          gcID="undefined", 
+  #                          control=grofit::grofit.control(suppress.messages=TRUE,model.type = c(model)))
   
   # if (fit$fitFlag){
   #   plot <- ggplot2::ggplot() +
@@ -217,7 +237,7 @@ q.calc.df <-function(df = NULL, calc.signal = NULL, data.col = NULL, model = "go
 #' @export
 #'
 #' @examples
-calc.ratio <- function(df = NULL, x.signal = NULL, y.signal = NULL){
+calc.ratio.individual <- function(df = NULL, x.signal = NULL, y.signal = NULL){
   
   df.tmp <- df %>%
     filter(signal == x.signal | signal == y.signal) %>%
