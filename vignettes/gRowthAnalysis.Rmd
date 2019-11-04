@@ -11,7 +11,7 @@ vignette: >
 ---
 
 How to use:
-```{r}
+```{r eval=FALSE, include=FALSE}
 library(devtools)
 load_all()
 
@@ -26,7 +26,7 @@ plan(multisession, workers = availableCores()-1)
 
 ## XML file
 
-```{r}
+```{r eval=FALSE, include=FALSE}
 file = "data/20190618_bidir_GFPmorange_GFPgain95/2019-06-07 15-56-57_plate_1.xml"
 xml.in = read.tecan.xml(file)
 
