@@ -237,13 +237,14 @@ q.calc.df <-function(df = NULL, calc.signal = NULL, data.col = NULL, model = "go
 #' @export
 #'
 #' @examples
-calc.ratio.individual <- function(df = NULL, x.signal = NULL, y.signal = NULL){
+ratio.calc.individual <- function(df, x.signal = NULL, y.signal = NULL){
+  if (is.null(x.signal)){stop("There is no x.sginal given.")}
+  if (is.null(y.signal)){stop("There is no y.sginal given.")}
   
   df.tmp <- df %>%
-    filter(signal == x.signal | signal == y.signal) %>%
-    spread(signal, value) 
+    select( X = !!x.signal, Y = !!y.signal)
   
-  fit = lm(df.tmp[[y.signal]] ~ df.tmp[[x.signal]] )
+  fit = lm(df.tmp$X ~ df.tmp$Y )
     
   return(fit)
   
