@@ -69,47 +69,12 @@
 
       </header><div class="row">
   <div class="contents col-md-9">
-
 <div id="growthanalysis" class="section level1">
 <div class="page-header"><h1 class="hasAnchor">
 <a href="#growthanalysis" class="anchor"></a>gRowthAnalysis</h1></div>
 
 <p>pkgdown::build_site()</p>
-<p>library(tidyverse) library(devtools) load_all()</p>
-<p>file_name = “data/20190618_bidir_GFPmorange_GFPgain95/2019-06-07 15-56-57_plate_1_0.csv”</p>
-<p>data &lt;- read.data.csv(file_name)</p>
-<p>data &lt;- time.to.hour(data, “time”)</p>
-<p>corr_file = “data/YeastProject_SR_20150228_GrowthExperiment/FitLang.csv”</p>
-<p>data &lt;- correlation.recalculation(data, “ABS_600_600_NA”, corr_file)</p>
 </div>
-<div id="temperature" class="section level1">
-<h1 class="hasAnchor">
-<a href="#temperature" class="anchor"></a>temperature</h1>
-<p>df_temp = data %&gt;% filter(signal == “TEMP”)</p>
-</div>
-<div id="all-other-data" class="section level1">
-<h1 class="hasAnchor">
-<a href="#all-other-data" class="anchor"></a>all other data</h1>
-<p>df = data %&gt;% filter(signal != “TEMP”) %&gt;% nest(-well, -row, -col, -strain, -medium)</p>
-</div>
-<div id="calculate-growth-speeds" class="section level1">
-<h1 class="hasAnchor">
-<a href="#calculate-growth-speeds" class="anchor"></a>calculate growth speeds</h1>
-<p>df &lt;- df %&gt;% mutate(exp.time = map_dbl(data, ~calc.exp.time(., signal = “ABS_600_600_NA”))) %&gt;% mutate(data.exp = map2(data, exp.time, ~.x %&gt;% filter(time_hour &lt; .y)))</p>
-<p>tmp &lt;- df %&gt;% mutate(growth.parameters = map(data.exp, ~calc.q(df = .,calc.signal = “ABS_600_600_NA” )))</p>
-</div>
-<div id="mu-extractionestimate-does-not-seem-to-work-properly" class="section level1">
-<h1 class="hasAnchor">
-<a href="#mu-extractionestimate-does-not-seem-to-work-properly" class="anchor"></a>mu extraction/Estimate does not seem to work properly</h1>
-<p>extract.q.data(tmp, growth.parameters)</p>
-</div>
-<div id="tmp2---df--mutateratio--mapdataexp--tidycalcratio-xsignal-abs_600_600_na-ysignal--fluo_548_581_140" class="section level1">
-<h1 class="hasAnchor">
-<a href="#tmp2---df--mutateratio--mapdataexp--tidycalcratio-xsignal-abs_600_600_na-ysignal--fluo_548_581_140" class="anchor"></a>tmp2 &lt;- df %&gt;% mutate(ratio = map(data.exp, ~ tidy(calc.ratio(., x.signal= “ABS_600_600_NA”, y.signal = “FLUO_548_581_140”))))</h1>
-<p>tmp2 &lt;- df %&gt;% mutate(ratio = map(data.exp, ~ calc.ratio(., x.signal= “ABS_600_600_NA”, y.signal = “FLUO_548_581_140”)))</p>
-<p>extract.ratio.data(tmp2, ratio)</p>
-</div>
-
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
