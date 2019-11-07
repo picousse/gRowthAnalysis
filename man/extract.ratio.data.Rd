@@ -14,3 +14,6 @@
 \description{
 extract ratio data
 }
+\author{
+Pieter Coussement, \email{coussementpieter@gmail.com}
+}

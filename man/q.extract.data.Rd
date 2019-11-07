@@ -2,7 +2,7 @@
 % Please edit documentation in R/analyse.R
 \name{q.extract.data}
 \alias{q.extract.data}
-\title{Extract calculated growth parameters into a dataframe}
+\title{Title}
 \usage{
 q.extract.data(df, col)
 }
@@ -12,5 +12,5 @@ q.extract.data(df, col)
 \item{col}{}
 }
 \description{
-Extract calculated growth parameters into a dataframe
+Title
 }

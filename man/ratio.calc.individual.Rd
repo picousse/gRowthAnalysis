@@ -7,12 +7,18 @@
 ratio.calc.individual(df, x.signal = NULL, y.signal = NULL)
 }
 \arguments{
-\item{df}{}
+\item{df}{(datafrane). Dataframe containing the data}
 
-\item{x.signal}{}
+\item{x.signal}{(string). column name to be used in the x.axis}
 
-\item{y.signal}{}
+\item{y.signal}{(string). column name to be used in the y.axis}
+}
+\value{
+fitobject
 }
 \description{
 calcuate ratio q
+}
+\author{
+Pieter Coussement, \email{coussementpieter@gmail.com}
 }

@@ -16,3 +16,6 @@ q.plot.individual(fit = NULL, calc.signal = NULL, name = NULL)
 \description{
 plot the q fit
 }
+\author{
+Pieter Coussement, \email{coussementpieter@gmail.com}
+}

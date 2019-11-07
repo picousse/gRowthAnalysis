@@ -143,6 +143,7 @@ q.calc.individual <- function(df, model = "gompertz"){
 #' @export
 #'
 #' @examples
+#' @author Pieter Coussement, \email{coussementpieter@@gmail.com}
 q.plot.individual <- function(fit = NULL, calc.signal = NULL , name = NULL){
   if (is.null(df)){stop("There is no dataframe given.")}
   if (is.null(calc.signal)){stop("There is no signal given.")}
@@ -173,6 +174,7 @@ q.plot.individual <- function(fit = NULL, calc.signal = NULL , name = NULL){
 #' @export
 #'
 #' @examples
+#' @author Pieter Coussement, \email{coussementpieter@@gmail.com}
 q.plot.raw <- function(df, time = "time", value = "value"){
   
   p <- ggplot2::ggplot(df, aes(x = time , y = value)) + 
@@ -189,35 +191,73 @@ q.plot.raw <- function(df, time = "time", value = "value"){
 #' @export
 #'
 #' @examples
+#' @author Pieter Coussement, \email{coussementpieter@@gmail.com}
+q.extract.q.data.individual <- function(grofit.model){
+  
+  
+  out <- list(mu = NA,
+                A = NA,
+                lambda = NA,
+                integral = NA)
+  
+  
+  if ("fitFlag" %in% names(grofit.model)){
+    if(grofit.model$fitFlag){
+    out$mu = grofit.model$parameters$mu[['Estimate']]
+    out$A = grofit.model$parameters$A[['Estimate']]
+    out$lambda = grofit.model$parameters$lambda[['Estimate']]
+    out$integral = grofit.model$parameters$integral
+    }
+  }
+  
+  
+  # df_out <- df %>%
+  #   mutate(fit.flag = map_lgl(!!col_var, ~.$fitFlag)) %>%
+  #   mutate(mu = map_dbl(!!col_var, ~ifelse(class(.$parameters$mu) == "logical", NA, .$parameters$mu[['Estimate']] ))) %>%
+  #   mutate(A = map_dbl(!!col_var, ~ifelse(class(.$parameters$A) == "logical", NA, .$parameters$A[['Estimate']] ))) %>%
+  #   mutate(lambda = map_dbl(!!col_var, ~ifelse(class(.$parameters$lambda) == "logical", NA, .$parameters$lambda[['Estimate']] ))) %>%
+  #   mutate(integral = map_dbl(!!col_var, ~ifelse(class(.$parameters$integral) == "logical", NA, .$parameters$integral ))) %>%
+  #   select(well, fit.flag, mu, A, lambda, integral)
+  return(out)
+}
+
+
+
+#' Title
+#'
+#' @param df 
+#' @param col 
+#'
+#' @return
+#' @export
+#'
+#' @examples
 q.extract.data <- function(df, col){
-  col_var = enquo(col)
   
-  df_out <- df %>%
-    mutate(fit.flag = map_lgl(!!col_var, ~.$fitFlag)) %>%
-    mutate(mu = map_dbl(!!col_var, ~ifelse(class(.$parameters$mu) == "logical", NA, .$parameters$mu[['Estimate']] ))) %>%
-    mutate(A = map_dbl(!!col_var, ~ifelse(class(.$parameters$A) == "logical", NA, .$parameters$A[['Estimate']] ))) %>%
-    mutate(lambda = map_dbl(!!col_var, ~ifelse(class(.$parameters$lambda) == "logical", NA, .$parameters$lambda[['Estimate']] ))) %>%
-    mutate(integral = map_dbl(!!col_var, ~ifelse(class(.$parameters$integral) == "logical", NA, .$parameters$integral ))) %>%
-    select(well, fit.flag, mu, A, lambda, integral)
-  return(df_out)
+  out = df %>%
+    mutate(tmp = map( !!(sym(col)), ~q.extract.q.data.individual(.))) %>%
+    unnest_wider(tmp)
+  
+  return(out)
 }
 
-q.calc.df <-function(df = NULL, calc.signal = NULL, data.col = NULL, model = "gompertz"){
-  if (is.null(df)){stop("There is no dataframe given.")}
-  if (is.null(calc.signal)){stop("There is no signal given.")}
-  if (is.null(data.col)){stop("There data col given.")}
-  
-  # create dataframe with fit model, extract data and plots
-  
-  tmp <- df %>% 
-    mutate(growth.parameters = map(data.col, ~calc.q(df = .,calc.signal = calc.signal ))) %>%
-    mutate(raw_data = map)
-  
-  
-  # use calc.q.individual
-  # plot q
-}
 
+# q.calc.df <-function(df = NULL, calc.signal = NULL, data.col = NULL, model = "gompertz"){
+#   if (is.null(df)){stop("There is no dataframe given.")}
+#   if (is.null(calc.signal)){stop("There is no signal given.")}
+#   if (is.null(data.col)){stop("There data col given.")}
+#   
+#   # create dataframe with fit model, extract data and plots
+#   
+#   tmp <- df %>% 
+#     mutate(growth.parameters = map(data.col, ~calc.q(df = .,calc.signal = calc.signal ))) %>%
+#     mutate(raw_data = map)
+#   
+#   
+#   # use calc.q.individual
+#   # plot q
+# }
+# 
 
 
 
@@ -229,14 +269,13 @@ q.calc.df <-function(df = NULL, calc.signal = NULL, data.col = NULL, model = "go
 
 #' calcuate ratio q
 #'
-#' @param df 
-#' @param x.signal 
-#' @param y.signal 
+#' @param df (datafrane). Dataframe containing the data
+#' @param x.signal (string). column name to be used in the x.axis
+#' @param y.signal (string). column name to be used in the y.axis
 #'
-#' @return
+#' @return fitobject
 #' @export
-#'
-#' @examples
+#' @author Pieter Coussement, \email{coussementpieter@@gmail.com}
 ratio.calc.individual <- function(df, x.signal = NULL, y.signal = NULL){
   if (is.null(x.signal)){stop("There is no x.sginal given.")}
   if (is.null(y.signal)){stop("There is no y.sginal given.")}
@@ -248,49 +287,6 @@ ratio.calc.individual <- function(df, x.signal = NULL, y.signal = NULL){
     
   return(fit)
   
-
-  #   #different fittings for all signals
-  # smallDataset$signal= factor(smallDataset$signal)
-  # signals= levels(smallDataset$signal)
-  
-  #extract ABS from the signals list
-  
-    #extracting the data
-    # Xval = dfOdFluo[dfOdFluo$signal == "ABS_600_600_NA",]
-    # Yval = dfOdFluo[dfOdFluo$signal == sig ,]
-    # 
-    # #do the fitting      
-    # lineair.fitting = lm(Yval$value ~ Xval$value)
-    # 
-    # #collecting the data
-    # dataOutput = data.frame(strain = strain, 
-    #                         signal =  paste(as.character(sig), "vsOD", sep=""),
-    #                         well = well, 
-    #                         medium = medium,
-    #                         parameter = "FluoVsOD",
-    #                         value = lineair.fitting$coefficients[[2]],
-    #                         stringsAsFactors=FALSE
-    # )
-    # 
-    # #plotting
-    # # filename_plot =paste("./Figures/",strain,"/",well,"_",sig, "vsOD",".jpg", sep="")
-    # #jpeg(filename= filename_plot) 
-    # fluorescenceVsOD = ggplot() +
-    #   geom_point(aes(x=Xval$value, y=Yval$value), color="red", size = 4) +
-    #   geom_point(aes(x=smallDataset[smallDataset$signal == "ABS_600_600_NA","value"], y=smallDataset[smallDataset$signal == sig, "value"])) +
-    #   ggtitle(paste(strain, medium, well, sep=" "))
-    # #print(fluorescenceVsOD)
-    # #dev.off()
-    # 
-    # 
-    # #ggsave(paste("./Figures/",strain,"/",well,"_",sig, "vsOD",".png", sep=""), width=15, height=10, units="cm")
-    # 
-    # 
-    # 
-    # 
-    # 
-    # #adding the data
-    # out = rbind( dataOutput, out)
 }
 
 
@@ -303,6 +299,7 @@ ratio.calc.individual <- function(df, x.signal = NULL, y.signal = NULL){
 #' @export
 #'
 #' @examples
+#' @author Pieter Coussement, \email{coussementpieter@@gmail.com}
 extract.ratio.data <- function(df, col){
   col_var = enquo(col)
   

@@ -16,3 +16,6 @@ q.plot.raw(df, time = "time", value = "value")
 \description{
 Title
 }
+\author{
+Pieter Coussement, \email{coussementpieter@gmail.com}
+}

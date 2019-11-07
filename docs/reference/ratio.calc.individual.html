@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Title — q.plot.raw • gRowthAnalysis</title>
+<title>calcuate ratio q — ratio.calc.individual • gRowthAnalysis</title>
 
 
 <!-- jquery -->
@@ -35,8 +35,8 @@
 
 
 
-<meta property="og:title" content="Title — q.plot.raw" />
-<meta property="og:description" content="Title" />
+<meta property="og:title" content="calcuate ratio q — ratio.calc.individual" />
+<meta property="og:description" content="calcuate ratio q" />
 <meta name="twitter:card" content="summary" />
 
 
@@ -108,40 +108,44 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Title</h1>
+    <h1>calcuate ratio q</h1>
     <small class="dont-index">Source: <a href='https://github.com/picousse/gRowthAnalysis/blob/master/R/analyse.R'><code>R/analyse.R</code></a></small>
-    <div class="hidden name"><code>q.plot.raw.Rd</code></div>
+    <div class="hidden name"><code>ratio.calc.individual.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Title</p>
+    <p>calcuate ratio q</p>
     </div>
 
-    <pre class="usage"><span class='fu'>q.plot.raw</span>(<span class='no'>df</span>, <span class='kw'>time</span> <span class='kw'>=</span> <span class='st'>"time"</span>, <span class='kw'>value</span> <span class='kw'>=</span> <span class='st'>"value"</span>)</pre>
+    <pre class="usage"><span class='fu'>ratio.calc.individual</span>(<span class='no'>df</span>, <span class='kw'>x.signal</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>y.signal</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>df</th>
-      <td></td>
+      <td><p>(datafrane). Dataframe containing the data</p></td>
     </tr>
     <tr>
-      <th>time</th>
-      <td></td>
+      <th>x.signal</th>
+      <td><p>(string). column name to be used in the x.axis</p></td>
     </tr>
     <tr>
-      <th>value</th>
-      <td></td>
+      <th>y.signal</th>
+      <td><p>(string). column name to be used in the y.axis</p></td>
     </tr>
     </table>
 
+    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
+
+    <p>fitobject</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
       <li><a href="#arguments">Arguments</a></li>
+      <li><a href="#value">Value</a></li>
     </ul>
 
     <h2>Author</h2>
