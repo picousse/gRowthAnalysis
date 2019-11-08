@@ -26,12 +26,92 @@ plan(multisession, workers = availableCores()-1)
 
 ## XML file
 
-```{r eval=FALSE, include=FALSE}
+code underneath is able to parse the tecan xml output into a rather simple csv file that can then be straightforwardly processed.
+This function is not so fast, and thus it is best to do this once at the beginning of an analysis, write to a csv, and work from the csv latter on.
+
+```{r eval=FALSE}
 file = "data/20190618_bidir_GFPmorange_GFPgain95/2019-06-07 15-56-57_plate_1.xml"
 xml.in = read.tecan.xml(file)
 
 write.csv(xml.in, "xml.parsed.csv", row.names = FALSE)
 
-readr::read_csv("xml.parsed.csv")
+df = readr::read_csv("xml.parsed.csv")
 ```
+
+## Metafile
+
+The current concept starts with calculations per well, and only at the final point add the meta information (with a simple join). Summaries can easily be made using the summarize function from dplyr.
+
+## Data cleanup/restructure
+
+We'll split up the dataframe to retrieve only the core data.
+While doing so, we will also condense the data.
+
+```{r eval=FALSE}
+# start calculations
+df.temperature <- df %>%
+  filter(variable == "Temperature")
+
+# condens table
+df.1 <- df %>%
+  filter(!(variable == "Temperature")) %>%
+  # time.to.hour("time") %>%
+  group_by(well, variable) %>%
+  nest()
+
+
+```
+
+
+# Calculations
+
+## Expontential time
+
+
+```{r eval=FALSE}
+df.exp.time <- df.1 %>%
+  filter(variable == "ABS_600_600_NA") %>%
+  mutate(exp.time = map_dbl(data, ~calc.exp.time(., input_time = "time"))) %>%
+  ungroup() %>%
+  select(well, exp.time)
+
+# join with the original table
+df.exp <- df.1 %>%
+  left_join(df.exp.time)
+
+# create dataframe with data only from exponential time
+df.2 <- df.exp %>%
+  mutate(data.exp = map2(data, exp.time, ~.x %>% filter(time < .y)))
+
+
+```
+
+
+## Mu / q
+Calcualte q's. mu is special case of q.
+
+```{r eval=FALSE}
+df.q <- df.2 %>%
+  select(well, variable, data.exp) %>%
+  mutate(fit = map( data.exp, ~q.calc.individual(.))) 
+```
+
+
+## ratio's
+
+```{r eval=FALSE}
+df.tmp <- df.2 %>% filter(variable == "ABS_600_600_NA") %>% ungroup()
+df.tmp2 <- df.2 %>% filter (variable != "ABS_600_600_NA") %>% ungroup()
+
+df.ratio <- df.tmp2 %>%
+  left_join(df.tmp %>% select(norm.data = data, well), by= c("well" = "well")) %>%
+  mutate(data =  map2(data, `norm.data`, ~left_join(.x, .y, by = c("time" = "time"), suffix= c("", ".norm")))) %>%
+  select(-data.exp ) %>%
+  select(-norm.data) %>%
+  mutate(data.exp = map2(data, exp.time, ~.x %>% filter(time < .y)))
+
+df.ratio %>%
+  mutate(lin.fit = map(data.exp, ~ratio.calc.individual(., x.signal = 'value.norm', y.signal='value')))
+```
+
 
