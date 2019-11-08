@@ -192,7 +192,7 @@ q.plot.raw <- function(df, time = "time", value = "value"){
 #'
 #' @examples
 #' @author Pieter Coussement, \email{coussementpieter@@gmail.com}
-q.extract.q.data.individual <- function(grofit.model){
+q.extract.data.individual <- function(grofit.model){
   
   
   out <- list(mu = NA,
@@ -235,7 +235,7 @@ q.extract.q.data.individual <- function(grofit.model){
 q.extract.data <- function(df, col){
   
   out = df %>%
-    mutate(tmp = map( !!(sym(col)), ~q.extract.q.data.individual(.))) %>%
+    mutate(tmp = map( !!(sym(col)), ~q.extract.data.individual(.))) %>%
     unnest_wider(tmp)
   
   return(out)
@@ -300,7 +300,7 @@ ratio.calc.individual <- function(df, x.signal = NULL, y.signal = NULL){
 #'
 #' @examples
 #' @author Pieter Coussement, \email{coussementpieter@@gmail.com}
-extract.ratio.data <- function(df, col){
+ratio.extract.data <- function(df, col){
   col_var = enquo(col)
   
   df_out <- df %>%

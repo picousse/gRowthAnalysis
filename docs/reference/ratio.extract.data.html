@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Function reference • gRowthAnalysis</title>
+<title>extract ratio data — ratio.extract.data • gRowthAnalysis</title>
 
 
 <!-- jquery -->
@@ -35,7 +35,9 @@
 
 
 
-<meta property="og:title" content="Function reference" />
+<meta property="og:title" content="extract ratio data — ratio.extract.data" />
+<meta property="og:description" content="extract ratio data" />
+<meta name="twitter:card" content="summary" />
 
 
 
@@ -54,7 +56,7 @@
   </head>
 
   <body>
-    <div class="container template-reference-index">
+    <div class="container template-reference-topic">
       <header>
       <div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -104,144 +106,42 @@
       </header>
 
 <div class="row">
-  <div class="contents col-md-9">
+  <div class="col-md-9 contents">
     <div class="page-header">
-      <h1>Reference</h1>
+    <h1>extract ratio data</h1>
+    <small class="dont-index">Source: <a href='https://github.com/picousse/gRowthAnalysis/blob/master/R/analyse.R'><code>R/analyse.R</code></a></small>
+    <div class="hidden name"><code>ratio.extract.data.Rd</code></div>
     </div>
 
-    <table class="ref-index">
+    <div class="ref-description">
+    <p>extract ratio data</p>
+    </div>
 
-    <colgroup>
-      
-      <col class="alias" />
-      <col class="title" />
-    </colgroup>
+    <pre class="usage"><span class='fu'>ratio.extract.data</span>(<span class='no'>df</span>, <span class='no'>col</span>)</pre>
 
-    <tbody>
-      <tr>
-        <th colspan="2">
-          <h2 id="section-all-functions" class="hasAnchor"><a href="#section-all-functions" class="anchor"></a>All functions</h2>
-          <p class="section-desc"></p>
-        </th>
-      </tr>
-      <tr>
-        
-        <td>
-          <p><code><a href="calc.exp.time.html">calc.exp.time()</a></code> </p>
-        </td>
-        <td><p>calculate the exponential time of the curve. This is done by fitting a spline, and calculating when the first derivative goes below 0.</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="convert.parameter.df.to.name.html">convert.parameter.df.to.name()</a></code> </p>
-        </td>
-        <td><p>Title</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="convert.time.html">convert.time()</a></code> </p>
-        </td>
-        <td><p>Title</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="correlation.recalculation.html">correlation.recalculation()</a></code> </p>
-        </td>
-        <td><p>Title</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="full.well.name.html">full.well.name()</a></code> </p>
-        </td>
-        <td><p>Title</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="moving.average.html">moving.average()</a></code> </p>
-        </td>
-        <td><p>calculate the moving average of a dataseries</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="parse.cycle.html">parse.cycle()</a></code> </p>
-        </td>
-        <td><p>Title</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="parse.parameters.html">parse.parameters()</a></code> </p>
-        </td>
-        <td><p>Title</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="parse.well.timepoint.html">parse.well.timepoint()</a></code> </p>
-        </td>
-        <td><p>Title</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="pipe.html">%>%</a></code> </p>
-        </td>
-        <td><p>Pipe symbol</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="q.calc.individual.html">q.calc.individual()</a></code> </p>
-        </td>
-        <td><p>Calculate mu, based on a certain model</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="q.extract.data.html">q.extract.data()</a></code> </p>
-        </td>
-        <td><p>Title</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="q.extract.data.individual.html">q.extract.data.individual()</a></code> </p>
-        </td>
-        <td><p>Extract calculated growth parameters into a dataframe</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="q.plot.individual.html">q.plot.individual()</a></code> </p>
-        </td>
-        <td><p>plot the q fit</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="q.plot.raw.html">q.plot.raw()</a></code> </p>
-        </td>
-        <td><p>Title</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="ratio.calc.individual.html">ratio.calc.individual()</a></code> </p>
-        </td>
-        <td><p>calcuate ratio q</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="ratio.extract.data.html">ratio.extract.data()</a></code> </p>
-        </td>
-        <td><p>extract ratio data</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="read.tecan.xml.html">read.tecan.xml()</a></code> </p>
-        </td>
-        <td><p>Title</p></td>
-      </tr>
-    </tbody>
+    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
+    <table class="ref-arguments">
+    <colgroup><col class="name" /><col class="desc" /></colgroup>
+    <tr>
+      <th>df</th>
+      <td></td>
+    </tr>
+    <tr>
+      <th>col</th>
+      <td></td>
+    </tr>
     </table>
-  </div>
 
+
+  </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
-      <li><a href="#section-all-functions">All functions</a></li>
+      <li><a href="#arguments">Arguments</a></li>
     </ul>
+
+    <h2>Author</h2>
+    <p>Pieter Coussement, <a href='mailto:coussementpieter@gmail.com'>coussementpieter@gmail.com</a></p>
   </div>
 </div>
 
