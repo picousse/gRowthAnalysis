@@ -283,7 +283,7 @@ ratio.calc.individual <- function(df, x.signal = NULL, y.signal = NULL){
   df.tmp <- df %>%
     select( X = !!x.signal, Y = !!y.signal)
   
-  fit = lm(df.tmp$X ~ df.tmp$Y )
+  fit = lm(df.tmp$Y ~ df.tmp$X )
     
   return(fit)
   
