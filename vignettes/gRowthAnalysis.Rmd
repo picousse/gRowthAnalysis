@@ -110,8 +110,10 @@ df.ratio <- df.tmp2 %>%
   select(-norm.data) %>%
   mutate(data.exp = map2(data, exp.time, ~.x %>% filter(time < .y)))
 
-df.ratio %>%
-  mutate(lin.fit = map(data.exp, ~ratio.calc.individual(., x.signal = 'value.norm', y.signal='value')))
+df.ratio.fit <- df.ratio %>%
+  mutate(lin.fit = map(data.exp, ~ratio.calc.individual(., x.signal = 'value.norm', y.signal='value'))) 
+
+o <- ratio.extract.data(df.ratio.fit, "lin.fit")
 ```
 
 

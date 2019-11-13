@@ -24,7 +24,7 @@ Check out the vignette.
 ```R
 install.packages("remotes")
 
-remotes::install_github("picousse/GrowthFluoAnalysis")
+remotes::install_github("picousse/gRowthAnalysis")
 
 ``` 
 
